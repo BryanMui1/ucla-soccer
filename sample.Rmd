@@ -1,0 +1,20 @@
+---
+title: "Sample"
+author: "Bryan Mui - UID 506021334"
+date: "2025-02-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+season_2022 <- read_csv("2022-seaason-data-csv.csv")
+season_2024 <- read_csv("2024-season-data-csv.csv")
+```
+
