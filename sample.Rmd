@@ -11,10 +11,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidyverse)
+library(GGally)
 ```
 
 ```{r}
 season_2022 <- read_csv("2022-seaason-data-csv.csv")
 season_2024 <- read_csv("2024-season-data-csv.csv")
+```
+
+## Parallel Coordinates Plot w/ ggally
+
+```{r}
+# ggparcoord(season_2022, columns = 9:30, groupColumn=5)
+```
+
+```{r}
+# ggparcoord(season_2024, columns = 9:12, groupColumn=5)
 ```
 
