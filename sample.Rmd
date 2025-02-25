@@ -1,6 +1,6 @@
 ---
-title: "Sample"
-author: "Bryan Mui - UID 506021334"
+title: "Sample Comparison - UCLA Womens Soccer 2022 vs 2024 Season"
+author: "Bryan Mui"
 date: "2025-02-22"
 output: pdf_document
 ---
@@ -9,23 +9,52 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE}
 library(tidyverse)
 library(GGally)
+library(viridis)
+library(hrbrthemes)
 ```
 
 ```{r}
 season_2022 <- read_csv("2022-seaason-data-csv.csv")
 season_2024 <- read_csv("2024-season-data-csv.csv")
+data_stacked <- bind_rows(season_2022, season_2024)
 ```
+
+## Radar Chart w/ Metrics
+
+```{r}
+data_clean <- data_stacked %>%
+  select(c(1:5, 13:14, 23:27)) %>%
+  mutate(Season = substr(Date, 1, 4), .after = 'Date') 
+data_bruins <- data_clean %>%
+  filter(Team == 'UCLA Bruins')
+summary(data_bruins)
+data_bruins
+data_bruins_long <- data_bruins %>%
+  pivot_longer(cols = c(7:13), names_to = "Variable", values_to = "Value")
+data_bruins_long
+```
+
+
 
 ## Parallel Coordinates Plot w/ ggally
 
-```{r}
-# ggparcoord(season_2022, columns = 9:30, groupColumn=5)
+```{r fig.align="center", echo = FALSE, fig.width = 14}
+ggparcoord(data_bruins, columns = c(7:13), scale = "globalminmax", groupColumn = 2, showPoints = TRUE, title = "Parallel Coordinate Plot, 2022 vs 2024 Bruins", alphaLines = 0.5) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(legend.position = "top")
 ```
 
-```{r}
-# ggparcoord(season_2024, columns = 9:12, groupColumn=5)
+```{r fig.align="center", echo = FALSE, fig.width = 14}
+ggplot(data_bruins_long, aes(x=Variable, y=Value, fill=Season)) + 
+  geom_violin(position="dodge", alpha=0.5, color="black") +
+  geom_boxplot(width=0.1, color="white") +
+  theme_ipsum() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "grey"),
+  panel.background = element_rect(fill = 'black'))
 ```
 

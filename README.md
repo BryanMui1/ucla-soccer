@@ -21,3 +21,16 @@ Variables that Coach is interested in:
     - Which area were the crosses and how accurate were they 
     - *Crosses recorded, not area*
     
+Spec: 
+  + Report comparing the data of 2022 season to 2024. 
+  + Should compare 4 ways - 2022 home vs opp, 2024 home vs opp, and 2022 home vs 2024 home, and 2022 away vs 2024 away
+  + Vars: 
+    - Box entries(Same as penalty area entries)
+      + Runs
+      + Crosses
+    - Touches in the box(Same as touches in the penalty box)
+    - Positional Attacks / (Attacks w/ shot)
+    - Crosses / (Accurate crosses)
+  + Radial Chart 
+  + Parallel Coordinates Plot
+    
