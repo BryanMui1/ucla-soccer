@@ -5,56 +5,166 @@ date: "2025-02-22"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(GGally)
 library(viridis)
 library(hrbrthemes)
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
 season_2022 <- read_csv("2022-seaason-data-csv.csv")
 season_2024 <- read_csv("2024-season-data-csv.csv")
 data_stacked <- bind_rows(season_2022, season_2024)
 ```
 
-## Radar Chart w/ Metrics
-
-```{r}
+```{r, echo=FALSE}
 data_clean <- data_stacked %>%
   select(c(1:5, 13:14, 23:27)) %>%
-  mutate(Season = substr(Date, 1, 4), .after = 'Date') 
+  mutate(Season = substr(Date, 1, 4), .after = 'Date') %>%
+  mutate(Side = ifelse(Team == "UCLA Bruins", "Home", "Away"), .after = 'Team')
+data_all_long <- data_clean %>%
+  pivot_longer(cols = c(8:14), names_to = "Variable", values_to = "Value")
+
 data_bruins <- data_clean %>%
   filter(Team == 'UCLA Bruins')
-summary(data_bruins)
-data_bruins
 data_bruins_long <- data_bruins %>%
-  pivot_longer(cols = c(7:13), names_to = "Variable", values_to = "Value")
-data_bruins_long
+  pivot_longer(cols = c(8:14), names_to = "Variable", values_to = "Value")
+
+data_opps <- data_clean %>%
+  filter(Team != 'UCLA Bruins')
+data_opps_long <- data_opps %>%
+  pivot_longer(cols = c(8:14), names_to = "Variable", values_to = "Value")
 ```
-
-
 
 ## Parallel Coordinates Plot w/ ggally
 
-```{r fig.align="center", echo = FALSE, fig.width = 14}
-ggparcoord(data_bruins, columns = c(7:13), scale = "globalminmax", groupColumn = 2, showPoints = TRUE, title = "Parallel Coordinate Plot, 2022 vs 2024 Bruins", alphaLines = 0.5) + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  theme(legend.position = "top")
+### 2022 Bruins vs 2024 Bruins
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggparcoord(data_bruins, columns = c(8:14), scale = "globalminmax", groupColumn = 2, showPoints = TRUE, title = "Parallel Coordinate Plot, 2022 Bruins vs 2024 Bruins", alphaLines = 0.5) + 
+  theme_ipsum() +
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "gray"),
+  panel.background = element_rect(fill = "lightgrey")) + 
+  scale_color_manual(values = c("blue", "red"))
+```
+### 2022 Bruins vs 2022 Opponents
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggparcoord(data_clean %>% filter(Season==2022), columns = c(8:14), scale = "globalminmax", groupColumn = 7, showPoints = TRUE, title = "Parallel Coordinate Plot, 2022 Bruins vs 2022 Opponents", alphaLines = 0.5) + 
+  theme_ipsum() +
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "gray"),
+  panel.background = element_rect(fill = "white")) + 
+  scale_color_manual(values = c("orange", "blue"))
 ```
 
-```{r fig.align="center", echo = FALSE, fig.width = 14}
+
+### 2024 Bruins vs 2024 Opponents
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggparcoord(data_clean %>% filter(Season==2024), columns = c(8:14), scale = "globalminmax", groupColumn = 7, showPoints = TRUE, title = "Parallel Coordinate Plot, 2024 Bruins vs 2024 Opponents", alphaLines = 0.5) + 
+  theme_ipsum() +
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "gray"),
+  panel.background = element_rect(fill = "white")) + 
+  scale_color_manual(values = c("orange", "blue"))
+```
+
+### 2022 Opponents vs 2024 Opponents
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggparcoord(data_opps, columns = c(8:14), scale = "globalminmax", groupColumn = 2, showPoints = TRUE, title = "Parallel Coordinate Plot, 2022 Opponents vs 2024 Opponents", alphaLines = 0.5) + 
+  theme_ipsum() +
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "gray"),
+  panel.background = element_rect(fill = "lightgrey")) + 
+  scale_color_manual(values = c("blue", "red"))
+```
+
+## Grouped Boxplots + Violin(Shows Data Distribution)
+
+### 2022 Bruins vs 2024 Bruins
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
 ggplot(data_bruins_long, aes(x=Variable, y=Value, fill=Season)) + 
-  geom_violin(position="dodge", alpha=0.5, color="black") +
-  geom_boxplot(width=0.1, color="white") +
+  geom_violin(position="dodge", alpha=0.8, color="white") +
+  geom_boxplot(width=0.2, color="white") +
   theme_ipsum() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
   theme_bw() + 
   theme(plot.background=element_rect(fill = "grey"),
-  panel.background = element_rect(fill = 'black'))
+  panel.background = element_rect(fill = 'black')) + 
+  ggtitle("Grouped Boxplots + Violin(Chart), 2022 Bruins vs 2024 Bruins")
 ```
 
+### 2022 Bruins vs 2022 Opponents
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggplot(data_all_long %>% filter(Season==2022), aes(x=Variable, y=Value, fill=Side)) + 
+  geom_violin(position="dodge", alpha=0.8, color="black") +
+  geom_boxplot(width=0.2, color="black") +
+  theme_ipsum() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "grey"),
+  panel.background = element_rect(fill = 'lightgrey')) +
+  ggtitle("Grouped Boxplots + Violin(Chart), 2022 Bruins vs 2022 Opponents")
+```
+
+### 2024 Bruins vs 2024 Opponents
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggplot(data_all_long %>% filter(Season==2024), aes(x=Variable, y=Value, fill=Side)) + 
+  geom_violin(position="dodge", alpha=0.8, color="black") +
+  geom_boxplot(width=0.2, color="black") +
+  theme_ipsum() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "grey"),
+  panel.background = element_rect(fill = 'lightgrey')) +
+  ggtitle("Grouped Boxplots + Violin(Chart), 2024 Bruins vs 2024 Opponents")
+```
+
+### 2022 Opponents vs 2024 Opponents
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, fig.height=9}
+ggplot(data_opps_long, aes(x=Variable, y=Value, fill=Season)) + 
+  geom_violin(position="dodge", alpha=0.8, color="white") +
+  geom_boxplot(width=0.2, color="white") +
+  theme_ipsum() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+  theme_bw() + 
+  theme(plot.background=element_rect(fill = "grey"),
+  panel.background = element_rect(fill = 'black')) + 
+  ggtitle("Grouped Boxplots + Violin(Chart), 2022 Opponents vs 2024 Opponents")
+```
+
+## Radar Chart w/ Metrics
+
+* Radar Metrics: 
+  + Positional Attack Shot(%) - percent of positional attacks that lead to a shot 
+  + Accurate Cross(%) - percentage of accurate crosses(taken from all crosses)
+  + Penalty Area Run/Cross(%) - Ratio of penalty area runs to crosses
+  + Total shot accuracy(%) - percent of total shots that were on target
+  + OPA shot accuracy(%) - percent of on target shots taken outside penalty area(OPA)
+  + OPA shots/Total shots(%) - percent of shots taken outside penalty area / total shots
+  + Free Kicks to shot(%) - percent of free kicks that led to a shot taken
+
+```{r, echo=FALSE}
+
+radar_data <- data_stacked %>%
+  mutate(Season = substr(Date, 1, 4), .after = 'Date') %>%
+  mutate(Side = ifelse(Team == "UCLA Bruins", "Home", "Away"), .after = 'Team') %>%
+  mutate(`Positional Attack Shot(%)`=(`Positional attacks w/ shots` / `Positional attacks`) * 100,
+         `Accurate Cross(%)`=(`Crosses(accurate)` / Crosses) * 100)
+print(colnames(radar_data))
+
+```
+
+  
