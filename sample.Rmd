@@ -145,25 +145,25 @@ ggplot(data_opps_long, aes(x=Variable, y=Value, fill=Season)) +
   ggtitle("Grouped Boxplots + Violin(Chart), 2022 Opponents vs 2024 Opponents")
 ```
 
-## Radar Chart w/ Metrics
+<!-- ## Radar Chart w/ Metrics -->
 
-* Radar Metrics: 
-  + Positional Attack Shot(%) - percent of positional attacks that lead to a shot 
-  + Accurate Cross(%) - percentage of accurate crosses(taken from all crosses)
-  + Penalty Area Run/Cross(%) - Ratio of penalty area runs to crosses
-  + Total shot accuracy(%) - percent of total shots that were on target
-  + OPA shot accuracy(%) - percent of on target shots taken outside penalty area(OPA)
-  + OPA shots/Total shots(%) - percent of shots taken outside penalty area / total shots
-  + Free Kicks to shot(%) - percent of free kicks that led to a shot taken
+<!-- * Radar Metrics:  -->
+<!--   + Positional Attack Shot(%) - percent of positional attacks that lead to a shot  -->
+<!--   + Accurate Cross(%) - percentage of accurate crosses(taken from all crosses) -->
+<!--   + Penalty Area Run/Cross(%) - Ratio of penalty area runs to crosses -->
+<!--   + Total shot accuracy(%) - percent of total shots that were on target -->
+<!--   + OPA shot accuracy(%) - percent of on target shots taken outside penalty area(OPA) -->
+<!--   + OPA shots/Total shots(%) - percent of shots taken outside penalty area / total shots -->
+<!--   + Free Kicks to shot(%) - percent of free kicks that led to a shot taken -->
 
 ```{r, echo=FALSE}
 
-radar_data <- data_stacked %>%
-  mutate(Season = substr(Date, 1, 4), .after = 'Date') %>%
-  mutate(Side = ifelse(Team == "UCLA Bruins", "Home", "Away"), .after = 'Team') %>%
-  mutate(`Positional Attack Shot(%)`=(`Positional attacks w/ shots` / `Positional attacks`) * 100,
-         `Accurate Cross(%)`=(`Crosses(accurate)` / Crosses) * 100)
-print(colnames(radar_data))
+# radar_data <- data_stacked %>%
+#   mutate(Season = substr(Date, 1, 4), .after = 'Date') %>%
+#   mutate(Side = ifelse(Team == "UCLA Bruins", "Home", "Away"), .after = 'Team') %>%
+#   mutate(`Positional Attack Shot(%)`=(`Positional attacks w/ shots` / `Positional attacks`) * 100,
+#          `Accurate Cross(%)`=(`Crosses(accurate)` / Crosses) * 100)
+# print(colnames(radar_data))
 
 ```
 
